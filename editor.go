@@ -3,23 +3,30 @@ package main
 import "strings"
 
 func backspace(content string, cursorX, cursorY int) (string, int, int) {
-	lines := strings.Split(content, "\n")
+    lines := strings.Split(content, "\n")
 
-	if cursorY > 0 || cursorX > 0 {
-		if cursorX > 0 {
-			line := lines[cursorY]
-			line = line[:cursorX-1] + line[cursorX:]
-			lines[cursorY] = line
-			cursorX--
-		} else if cursorY > 0 {
-			cursorY--
-			cursorX = len(lines[cursorY])
-			lines = append(lines[:cursorY+1], lines[cursorY+2:]...)
-		}
-	}
-	content = strings.Join(lines, "\n")
-	return content, cursorX, cursorY
+    if cursorY > 0 || cursorX > 0 {
+        if cursorX > 0 {
+            // El cursor no está al principio de la línea
+            line := lines[cursorY]
+            line = line[:cursorX-1] + line[cursorX:]
+            lines[cursorY] = line
+            cursorX--
+        } else if cursorY > 0 {
+            // El cursor está al principio de la línea
+            cursorY-- // Mover el cursor a la línea anterior
+            cursorX = len(lines[cursorY]) // Colocar el cursor al final de la línea anterior
+            // Concatenar la línea actual con la línea anterior
+            lines[cursorY] = lines[cursorY] + lines[cursorY+1]
+            // Eliminar la línea vacía (ahora combinada)
+            lines = append(lines[:cursorY+1], lines[cursorY+2:]...)
+        }
+    }
+
+    content = strings.Join(lines, "\n")
+    return content, cursorX, cursorY
 }
+
 
 func enter(content string, cursorX, cursorY int) (string, int, int) {
     lines := strings.Split(content, "\n")
