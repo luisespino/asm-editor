@@ -7,10 +7,12 @@ import (
 	"strings"
 )
 
+var filename string
+
 func main() {
 	// capture filePath in args
 	args := os.Args
-	filename := args[1]
+	filename = args[1]
 
 	// termbox initialization
 	err := termbox.Init()
@@ -28,7 +30,7 @@ func main() {
 	}
 
 	// intial render
-	cursorX, cursorY := 0, 0
+	cursorX, cursorY := 0, 1
 	clrScr := true
 	renderText(content, cursorX, cursorY, clrScr)
 
@@ -42,12 +44,17 @@ func main() {
 						saveToFile(filename, content)
 					case termbox.KeyCtrlX:
 						return
+					case termbox.KeyCtrlR:
+						temp := run(filename)
+						clrScr = true
+						renderText(temp, cursorX, cursorY, clrScr)
+						termbox.PollEvent()
 					case termbox.KeyEnter:
 						content, cursorX, cursorY = enter(content, cursorX, cursorY)
 						clrScr = true
 					case termbox.KeyTab:
 						lines := strings.Split(content, "\n")
-						lines[cursorY] = lines[cursorY][:cursorX] + "    " + lines[cursorY][cursorX:]
+						lines[cursorY-1] = lines[cursorY-1][:cursorX] + "    " + lines[cursorY-1][cursorX:]
 						content = strings.Join(lines, "\n")
 						cursorX += 4
 					case termbox.KeyBackspace, termbox.KeyBackspace2:
@@ -67,11 +74,11 @@ func main() {
 					default:
 						if ev.Key == termbox.KeySpace {
 							lines := strings.Split(content, "\n")
-							lines[cursorY] = lines[cursorY][:cursorX] + " " + lines[cursorY][cursorX:]
+							lines[cursorY-1] = lines[cursorY-1][:cursorX] + " " + lines[cursorY-1][cursorX:]
 							content = strings.Join(lines, "\n")
 						} else if ev.Ch != 0 {
 							lines := strings.Split(content, "\n")
-							lines[cursorY] = lines[cursorY][:cursorX] + string(ev.Ch) + lines[cursorY][cursorX:]
+							lines[cursorY-1] = lines[cursorY-1][:cursorX] + string(ev.Ch) + lines[cursorY-1][cursorX:]
 							content = strings.Join(lines, "\n")
 						}
 						cursorX++

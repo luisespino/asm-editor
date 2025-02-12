@@ -5,21 +5,21 @@ import "strings"
 func backspace(content string, cursorX, cursorY int) (string, int, int) {
     lines := strings.Split(content, "\n")
 
-    if cursorY > 0 || cursorX > 0 {
+    if cursorY > 1 || cursorX > 0 {
         if cursorX > 0 {
             // El cursor no está al principio de la línea
-            line := lines[cursorY]
+            line := lines[cursorY-1]
             line = line[:cursorX-1] + line[cursorX:]
-            lines[cursorY] = line
+            lines[cursorY-1] = line
             cursorX--
-        } else if cursorY > 0 {
+        } else if cursorY > 1 {
             // El cursor está al principio de la línea
             cursorY-- // Mover el cursor a la línea anterior
-            cursorX = len(lines[cursorY]) // Colocar el cursor al final de la línea anterior
+            cursorX = len(lines[cursorY-1]) // Colocar el cursor al final de la línea anterior
             // Concatenar la línea actual con la línea anterior
-            lines[cursorY] = lines[cursorY] + lines[cursorY+1]
+            lines[cursorY-1] = lines[cursorY-1] + lines[cursorY]
             // Eliminar la línea vacía (ahora combinada)
-            lines = append(lines[:cursorY+1], lines[cursorY+2:]...)
+            lines = append(lines[:cursorY], lines[cursorY+1:]...)
         }
     }
 
@@ -31,15 +31,15 @@ func backspace(content string, cursorX, cursorY int) (string, int, int) {
 func enter(content string, cursorX, cursorY int) (string, int, int) {
     lines := strings.Split(content, "\n")
     
-    currentLine := lines[cursorY]
-    lines[cursorY] = currentLine[:cursorX]
+    currentLine := lines[cursorY-1]
+    lines[cursorY-1] = currentLine[:cursorX]
 
     if len(currentLine[cursorX:]) > 0 {
-        lines = append(lines[:cursorY+1], lines[cursorY:]...)
-        lines[cursorY+1] = currentLine[cursorX:]
+        lines = append(lines[:cursorY], lines[cursorY-1:]...)
+        lines[cursorY] = currentLine[cursorX:]
     } else {
-        lines = append(lines[:cursorY+1], lines[cursorY:]...)
-        lines[cursorY+1] = "" 
+        lines = append(lines[:cursorY], lines[cursorY-1:]...)
+        lines[cursorY] = "" 
 	}
 
     content = strings.Join(lines, "\n")
@@ -56,16 +56,16 @@ func delete(content string, cursorX, cursorY int) (string, int, int) {
 	lines := strings.Split(content, "\n")
 
 
-	if cursorY < len(lines) {
-		line := lines[cursorY]
+	if cursorY-1 < len(lines) {
+		line := lines[cursorY-1]
 
 
 		if cursorX < len(line) {
 			line = line[:cursorX] + line[cursorX+1:]
-			lines[cursorY] = line
-		} else if cursorY < len(lines)-1 {
-			lines[cursorY] = lines[cursorY] + lines[cursorY+1] // Unir la línea actual con la siguiente
-			lines = append(lines[:cursorY+1], lines[cursorY+2:]...) // Eliminar la siguiente línea
+			lines[cursorY-1] = line
+		} else if cursorY < len(lines) {
+			lines[cursorY-1] = lines[cursorY-1] + lines[cursorY] // Unir la línea actual con la siguiente
+			lines = append(lines[:cursorY], lines[cursorY+1:]...) // Eliminar la siguiente línea
 		}
 	}
 
@@ -79,10 +79,10 @@ func delete(content string, cursorX, cursorY int) (string, int, int) {
 
 func moveUp(content string, cursorX, cursorY int) (int, int) {
 	lines := strings.Split(content, "\n")
-	if cursorY > 0 {
+	if cursorY > 1 {
 		cursorY--
-		if cursorX > len(lines[cursorY]) {
-			cursorX = len(lines[cursorY]) 
+		if cursorX > len(lines[cursorY-1]) {
+			cursorX = len(lines[cursorY-1]) 
 		}
 	}
 	return cursorX, cursorY
@@ -90,10 +90,10 @@ func moveUp(content string, cursorX, cursorY int) (int, int) {
 
 func moveDown(content string, cursorX, cursorY int) (int, int) {
 	lines := strings.Split(content, "\n")
-	if cursorY < len(lines)-1 {
+	if cursorY < len(lines) {
 		cursorY++
-		if cursorX > len(lines[cursorY]) {
-			cursorX = len(lines[cursorY])
+		if cursorX > len(lines[cursorY-1]) {
+			cursorX = len(lines[cursorY-1])
 		}
 	}
 	return cursorX, cursorY
@@ -108,7 +108,7 @@ func moveLeft(content string, cursorX, cursorY int) (int, int) {
 
 func moveRight(content string, cursorX, cursorY int) (int, int) {
 	lines := strings.Split(content, "\n")
-	if cursorX < len(lines[cursorY]) {
+	if cursorX < len(lines[cursorY-1]) {
 		cursorX++
 	}
 	return cursorX, cursorY

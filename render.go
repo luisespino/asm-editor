@@ -9,8 +9,25 @@ func isCtrl(word string) bool {
 	return len(word) > 0 && word[0] == '^'
 }
 
+func setColor(word string) termbox.Attribute {
+	if len(word) > 0 && word[0] == '.' {
+		return termbox.ColorLightMagenta
+	}
+	if len(word) > 0 && word[len(word)-1] == ':' {
+		return termbox.ColorLightBlue
+	}
+	if len(word) > 0 && word[0] == '"' {
+		return termbox.ColorLightYellow
+	}
+	if len(word) > 0 && word[len(word)-1] == '"' {
+		return termbox.ColorLightYellow
+	}
+	return termbox.ColorWhite
+}
+
+
 func renderText(content string, cursorX, cursorY int, clrScr bool) {
-	x, y := 0, -1
+	x, y := 0, 0
 	
 	if clrScr {
 		termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
@@ -20,21 +37,53 @@ func renderText(content string, cursorX, cursorY int, clrScr bool) {
 	for _, line := range lines {
 		x = 0
 		y++
+
+		word := ""
+
 		attr := termbox.ColorWhite
 		for _, char := range line {
-			if char == '.' {
-				attr = termbox.ColorMagenta
+			if char == ' ' || char == '\t' {
+				if word != "" {
+					attr = setColor(word)
+					for _, wChar := range word {
+						termbox.SetCell(x, y, wChar, attr, termbox.ColorDefault)
+						x++
+					}
+					word = ""	
+				}
+				termbox.SetCell(x, y, char, attr, termbox.ColorDefault)
+				x++
+			} else {
+				word += string(char)
 			}
-			if char == ' ' {
-				attr = termbox.ColorWhite
-			}
-			termbox.SetCell(x, y, char, attr, termbox.ColorDefault)
-			x++
+			
 		}
+
+		if word != "" {
+			attr = setColor(word)
+			for _, wChar := range word {
+				termbox.SetCell(x, y, wChar, attr, termbox.ColorDefault)
+				x++
+			}
+			word = ""	
+		}
+
 	}
-	
+
+	programName := "   asm-editor"
+	centerPos := (80 - len(filename)) / 2
+	for x := 0; x < 80; x++ {
+		termbox.SetCell(x, 0, ' ', termbox.ColorBlack, termbox.ColorWhite)
+	}
+	for i, char := range programName {
+		termbox.SetCell(i, 0, char, termbox.ColorBlack, termbox.ColorWhite)
+	}
+	for i, char := range filename {
+		termbox.SetCell(centerPos+i, 0, char, termbox.ColorBlack, termbox.ColorWhite)
+	}
+
 	x = 0
-	message := "^S Save   ^X Exit"
+	message := "^S Save   ^X Exit   ^R Run"
 	words := strings.Fields(message)
 	for _, word := range words {
 		attr := termbox.ColorDefault
