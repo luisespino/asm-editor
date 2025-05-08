@@ -30,6 +30,7 @@ go version
 >[!IMPORTANT]
 >Make sure the version matches the one specified in your go.mod file.
 If it doesn't, update go.mod to reflect your current Go version.
+>Remember: only the first two numbers (e.g. 1.21) are used in the go.mod file — the patch version is not included.
 
 Build the editor:
 ```
