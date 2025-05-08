@@ -1,15 +1,40 @@
-# asm-editor
-Open-source assembly language editor for terminals.
+# ASM-Editor
+An open-source assembly language editor for the terminal.
 
-Supports assembly languages supported by GNU Assembler. Uses the "as" and "ld" commands to create executables.
+Supports any assembly languages compatible with the GNU Assembler. Uses the "as" and "ld" commands to assembler and link executables.
 
-Written in Go using Termbox for the text-based UI. The editor follows a Nano-style interface.
+Written in Go, featuring a text-based user interface (TUI) built with Termbox, following a Nano-style interaction model.
 
-In the preview version, you have options to save, exit, and run.
+In the current version, you can:
+- Save files
+- Exit the editor
+- Run your code.
 
-To run:
+## Build Instructions
+
+Requirements:
+- Go
+- Git
+
+Clone the repository:
 ```
-./asm-editor test/write.s
+git clone https://github.com/luisespino/asm-editor.git
+cd asm-editor
+```
+
+Build the editor:
+```
+go build -o asm-editor
+```
+
+Move the binary to a system path:
+```
+sudo mv asm-editor /usr/local/bin/
+```
+
+Run the editor (use the appropriate write.s file for your architecture):
+```
+asm-editor test/write.s
 ```
 
 Editor screenshot:
