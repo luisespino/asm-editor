@@ -22,6 +22,15 @@ git clone https://github.com/luisespino/asm-editor.git
 cd asm-editor
 ```
 
+Check the Go version:
+```
+go version
+```
+
+>[!IMPORTANT]
+>Make sure the version matches the one specified in your go.mod file.
+If it doesn't, update go.mod to reflect your current Go version.
+
 Build the editor:
 ```
 go build -o asm-editor
